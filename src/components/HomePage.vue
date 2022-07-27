@@ -15,9 +15,11 @@
     <div>
       <p v-if="loader.status === true">Carregando ...</p>
       <p v-if="error.status === true">{{ error.msg }}</p>
-      <ul>
+      <ul class="champions">
         <li v-for="champion in champions" v-bind:key="champion.name">
-          <p>{{ champion }}</p>
+          <img :src="getChampionImage(champion.id)" alt="" />
+          <span>{{ champion.name }}</span>
+          <p>{{ champion.title }}</p>
         </li>
       </ul>
     </div>
@@ -55,13 +57,6 @@ export default {
         .then(
           (response) => {
             this.champions = response.data.data;
-            Object.entries(this.champions).map((ch) => {
-              return {
-                ch,
-              };
-            });
-            //Object.fromEntries(obj);
-            console.log(this.champions);
           },
           function () {
             this.error.status = true;
@@ -71,16 +66,9 @@ export default {
           this.loader.status = false;
         });
     },
-    // dataProcessingChampions() {
-    //   this.getChampions();
-    //   var obj = Object.entries(this.champions);
-    //   obj.map(function (ch, index, array) {
-    //     return {
-    //       index: "name",
-    //     };
-    //   });
-    //   Object.fromEntries(obj);
-    // },
+    getChampionImage(championKey) {
+      return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_0.jpg`;
+    },
     searchChampions() {
       console.log(this.field);
     },
@@ -106,5 +94,9 @@ a {
 }
 img {
   width: 200px;
+}
+.champions {
+  padding: 10px;
+  margin: 20px;
 }
 </style>
