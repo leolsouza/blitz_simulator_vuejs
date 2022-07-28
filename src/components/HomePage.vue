@@ -1,10 +1,10 @@
 <template>
   <div class="homepage">
     <h1>BLITZ</h1>
-    <form @click.stop.prevent="searchChampions()">
+    <form @click.stop.prevent="searchChampions">
       <input
         type="text"
-        v-model="field"
+        v-model.lazy="field"
         placeholder="Digite o nome do campeão"
       />
       <button>Procurar</button>
@@ -12,14 +12,23 @@
     <p>
       <button @click="getChampions()">Todos os campeões</button>
     </p>
+
+    <div>
+      <ButtonFilter v-bind:champ="champions" name="Tank" />
+      <ButtonFilter v-bind:champ="champions" name="Mage" />
+      <ButtonFilter v-bind:champ="champions" name="Assassin" />
+      <ButtonFilter v-bind:champ="champions" name="Marksman" />
+      <ButtonFilter v-bind:champ="champions" name="Fighter" />
+      <ButtonFilter v-bind:champ="champions" name="Support" />
+    </div>
+
     <div>
       <p v-if="loader.status === true">Carregando ...</p>
       <p v-if="error.status === true">{{ error.msg }}</p>
       <ul class="champions">
-        <li v-for="champion in champions" v-bind:key="champion.name">
+        <li v-for="champion in searchChampions" v-bind:key="champion.name">
           <img :src="getChampionImage(champion.id)" alt="" />
           <span>{{ champion.name }}</span>
-          <p>{{ champion.title }}</p>
         </li>
       </ul>
     </div>
@@ -28,12 +37,11 @@
 
 <script>
 import axios from "axios";
+import ButtonFilter from "./roles-filter/ButtonFilter.vue";
 
 export default {
   name: "HomePage",
-  props: {
-    msg: String,
-  },
+  components: { ButtonFilter },
   data: function () {
     return {
       field: "",
@@ -69,8 +77,14 @@ export default {
     getChampionImage(championKey) {
       return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_0.jpg`;
     },
+  },
+  computed: {
     searchChampions() {
-      console.log(this.field);
+      let champ = {};
+      champ = Object.values(this.champions).filter((ch) => {
+        return ch.name.toLowerCase().indexOf(this.field.toLowerCase()) > -1;
+      });
+      return champ;
     },
   },
 };
