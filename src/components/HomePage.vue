@@ -1,32 +1,38 @@
 <template>
   <div class="homepage">
     <h1>BLITZ</h1>
-    <form @click.stop.prevent="searchChampions">
-      <input
-        type="text"
-        v-model.lazy="field"
-        placeholder="Digite o nome do campeão"
-      />
-      <button>Procurar</button>
-    </form>
-    <p>
-      <button @click="getChampions()">Todos os campeões</button>
-    </p>
+
+    <input
+      type="text"
+      v-model="search"
+      placeholder="Digite o nome do campeão"
+    />
 
     <div>
-      <ButtonFilter v-bind:champ="champions" name="Tank" />
-      <ButtonFilter v-bind:champ="champions" name="Mage" />
-      <ButtonFilter v-bind:champ="champions" name="Assassin" />
-      <ButtonFilter v-bind:champ="champions" name="Marksman" />
-      <ButtonFilter v-bind:champ="champions" name="Fighter" />
-      <ButtonFilter v-bind:champ="champions" name="Support" />
+      <!-- <button @click="currentSelectedCategory = 'Tank'">Tank</button>
+      <button @click="currentSelectedCategory = 'Mage'">Mage</button>
+      <button @click="currentSelectedCategory = 'Assassin'">Assassin</button>
+      <button @click="currentSelectedCategory = 'Marksman'">Marksman</button>
+      <button @click="currentSelectedCategory = 'Fighter'">Fighter</button>
+      <button @click="currentSelectedCategory = 'Support'">Support</button> -->
+
+      <champion-type-filter @filter="currentSelectedCategory = $event" />
+      <button @click="resetSearch()">Todos</button>
     </div>
 
+    <div>
+      <select v-model="difficulty">
+        <option value="">Todas as dificuldades</option>
+        <option value="easy">Easy</option>
+        <option value="medium">Medium</option>
+        <option value="hard">Hard</option>
+      </select>
+    </div>
     <div>
       <p v-if="loader.status === true">Carregando ...</p>
       <p v-if="error.status === true">{{ error.msg }}</p>
       <ul class="champions">
-        <li v-for="champion in searchChampions" v-bind:key="champion.name">
+        <li v-for="champion in displayChampions" v-bind:key="champion.name">
           <img :src="getChampionImage(champion.id)" alt="" />
           <span>{{ champion.name }}</span>
         </li>
@@ -37,15 +43,15 @@
 
 <script>
 import axios from "axios";
-import ButtonFilter from "./roles-filter/ButtonFilter.vue";
+import ChampionTypeFilter from "./roles-filter/ChampionTypeFilter.vue";
 
 export default {
+  components: { ChampionTypeFilter },
   name: "HomePage",
-  components: { ButtonFilter },
   data: function () {
     return {
-      field: "",
-      champions: [],
+      search: "",
+      champions: {},
       error: {
         msg: "Página não encontrada",
         status: "",
@@ -53,38 +59,70 @@ export default {
       loader: {
         status: false,
       },
+      currentSelectedCategory: null,
+      difficulty: "",
+      // easy: ["1", "2", "3", "4"],
+      //   medium: ["5", "6", "7"],
+      //   hard: ["8", "9", "10"],
     };
   },
+
   methods: {
-    getChampions() {
-      this.loader.status = true;
-      var url =
-        "http://ddragon.leagueoflegends.com/cdn/12.14.1/data/en_US/champion.json";
-      axios
-        .get(url)
-        .then(
-          (response) => {
-            this.champions = response.data.data;
-          },
-          function () {
-            this.error.status = true;
-          }
-        )
-        .finally(() => {
-          this.loader.status = false;
-        });
+    async getChampions() {
+      try {
+        this.loader.status = true;
+        var url =
+          "http://ddragon.leagueoflegends.com/cdn/12.14.1/data/en_US/champion.json";
+
+        const response = await axios.get(url);
+        this.champions = response.data.data;
+        this.loader.status = false;
+      } catch {
+        this.error.status = true;
+      }
     },
+
     getChampionImage(championKey) {
       return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_0.jpg`;
     },
+
+    resetSearch() {
+      this.search = "";
+      this.currentSelectedCategory = "";
+    },
+
+    handleFilterUpdated(type) {
+      this.currentSelectedCategory = type;
+    },
   },
+
+  mounted() {
+    this.getChampions();
+  },
+
   computed: {
-    searchChampions() {
-      let champ = {};
-      champ = Object.values(this.champions).filter((ch) => {
-        return ch.name.toLowerCase().indexOf(this.field.toLowerCase()) > -1;
-      });
-      return champ;
+    displayChampions() {
+      const champions = Object.values(this.champions);
+      const search = this.search.toLowerCase();
+      const tag = this.currentSelectedCategory;
+      // const difficulty = this.difficulty;
+
+      const filterBySearch = (champion) =>
+        !search || champion.name.toLowerCase().includes(search);
+
+      const filterByTag = (champion) => !tag || champion.tags.includes(tag);
+
+      // // const filterByDifficulty = (champion) => {
+      // //   if (difficulty == "easy") {
+      // //     let easy = ["1", "2", "3", "4"];
+      // //     !easy || champion.info.difficulty.includes(easy);
+      // //   }
+
+      // //   return;
+      // };
+
+      return champions.filter(filterBySearch).filter(filterByTag);
+      // .filter(filterByDifficulty);
     },
   },
 };
