@@ -9,13 +9,6 @@
     />
 
     <div>
-      <!-- <button @click="currentSelectedCategory = 'Tank'">Tank</button>
-      <button @click="currentSelectedCategory = 'Mage'">Mage</button>
-      <button @click="currentSelectedCategory = 'Assassin'">Assassin</button>
-      <button @click="currentSelectedCategory = 'Marksman'">Marksman</button>
-      <button @click="currentSelectedCategory = 'Fighter'">Fighter</button>
-      <button @click="currentSelectedCategory = 'Support'">Support</button> -->
-
       <champion-type-filter @filter="currentSelectedCategory = $event" />
       <button @click="resetSearch()">Todos</button>
     </div>
@@ -61,9 +54,6 @@ export default {
       },
       currentSelectedCategory: null,
       difficulty: "",
-      // easy: ["1", "2", "3", "4"],
-      //   medium: ["5", "6", "7"],
-      //   hard: ["8", "9", "10"],
     };
   },
 
@@ -90,7 +80,6 @@ export default {
       this.search = "";
       this.currentSelectedCategory = "";
     },
-
     handleFilterUpdated(type) {
       this.currentSelectedCategory = type;
     },
@@ -105,24 +94,27 @@ export default {
       const champions = Object.values(this.champions);
       const search = this.search.toLowerCase();
       const tag = this.currentSelectedCategory;
-      // const difficulty = this.difficulty;
+      const difficulty = this.difficulty;
+      const difficulties = {
+        easy: [1, 2, 3, 4],
+        medium: [5, 6, 7],
+        hard: [8, 9, 10],
+      };
 
       const filterBySearch = (champion) =>
         !search || champion.name.toLowerCase().includes(search);
 
       const filterByTag = (champion) => !tag || champion.tags.includes(tag);
 
-      // // const filterByDifficulty = (champion) => {
-      // //   if (difficulty == "easy") {
-      // //     let easy = ["1", "2", "3", "4"];
-      // //     !easy || champion.info.difficulty.includes(easy);
-      // //   }
+      const filterByDifficulty = (champion) =>
+        difficulties[difficulty]
+          ? difficulties[difficulty].includes(champion.info.difficulty)
+          : champion;
 
-      // //   return;
-      // };
-
-      return champions.filter(filterBySearch).filter(filterByTag);
-      // .filter(filterByDifficulty);
+      return champions
+        .filter(filterBySearch)
+        .filter(filterByTag)
+        .filter(filterByDifficulty);
     },
   },
 };
