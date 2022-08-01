@@ -1,19 +1,16 @@
 <template>
   <div class="homepage">
     <h1>BLITZ</h1>
+    <div class="filters">
+      <input
+        type="text"
+        v-model="search"
+        placeholder="Digite o nome do campeão"
+      />
 
-    <input
-      type="text"
-      v-model="search"
-      placeholder="Digite o nome do campeão"
-    />
-
-    <div>
       <champion-type-filter @filter="currentSelectedCategory = $event" />
       <button @click="resetSearch()">Todos</button>
-    </div>
 
-    <div>
       <select v-model="difficulty">
         <option value="">Todas as dificuldades</option>
         <option value="easy">Easy</option>
@@ -21,13 +18,16 @@
         <option value="hard">Hard</option>
       </select>
     </div>
+
     <div>
-      <p v-if="loader.status === true">Carregando ...</p>
+      <p v-if="loader.status === true">{{ loader.msg }}</p>
       <p v-if="error.status === true">{{ error.msg }}</p>
       <ul class="champions">
         <li v-for="champion in displayChampions" v-bind:key="champion.name">
           <img :src="getChampionImage(champion.id)" alt="" />
-          <span>{{ champion.name }}</span>
+          <p>
+            <span>{{ champion.id }}</span>
+          </p>
         </li>
       </ul>
     </div>
@@ -46,11 +46,12 @@ export default {
       search: "",
       champions: {},
       error: {
+        status: false,
         msg: "Página não encontrada",
-        status: "",
       },
       loader: {
         status: false,
+        msg: "Carregando...",
       },
       currentSelectedCategory: null,
       difficulty: "",
@@ -68,6 +69,7 @@ export default {
         this.champions = response.data.data;
         this.loader.status = false;
       } catch {
+        this.loader.status = false;
         this.error.status = true;
       }
     },
@@ -96,8 +98,8 @@ export default {
       const tag = this.currentSelectedCategory;
       const difficulty = this.difficulty;
       const difficulties = {
-        easy: [1, 2, 3, 4],
-        medium: [5, 6, 7],
+        easy: [1, 2, 3],
+        medium: [4, 5, 6, 7],
         hard: [8, 9, 10],
       };
 
@@ -142,5 +144,10 @@ img {
 .champions {
   padding: 10px;
   margin: 20px;
+}
+.filters {
+  display: flex;
+  flex-direction: row;
+  justify-content: center;
 }
 </style>
