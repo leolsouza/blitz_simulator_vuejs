@@ -8,13 +8,15 @@ Vue.use(Router);
 let home = [
   {
     path: "/",
+    name: "HomePage",
     component: HomePage,
   },
 ];
 
 let components = [
   {
-    path: "/champion",
+    path: "/champions/:championId",
+    name: "ChampionSelected",
     component: ChampionSelected,
   },
 ];

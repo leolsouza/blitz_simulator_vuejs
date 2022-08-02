@@ -22,12 +22,21 @@
     <div>
       <p v-if="loader.status === true">{{ loader.msg }}</p>
       <p v-if="error.status === true">{{ error.msg }}</p>
+
       <ul class="champions">
         <li v-for="champion in displayChampions" v-bind:key="champion.name">
-          <img :src="getChampionImage(champion.id)" alt="" />
-          <p>
-            <span>{{ champion.id }}</span>
-          </p>
+          <router-link
+            class="router"
+            :to="{
+              name: 'ChampionSelected',
+              params: { championId: champion.id },
+            }"
+          >
+            <img :src="getChampionImage(champion.id)" alt="" />
+            <p>
+              <span>{{ champion.name }}</span>
+            </p>
+          </router-link>
         </li>
       </ul>
     </div>
@@ -63,7 +72,7 @@ export default {
       try {
         this.loader.status = true;
         var url =
-          "http://ddragon.leagueoflegends.com/cdn/12.14.1/data/en_US/champion.json";
+          "http://ddragon.leagueoflegends.com/cdn/12.14.1/data/pt_BR/champion.json";
 
         const response = await axios.get(url);
         this.champions = response.data.data;
@@ -149,5 +158,9 @@ img {
   display: flex;
   flex-direction: row;
   justify-content: center;
+}
+.router {
+  text-decoration: none;
+  color: black;
 }
 </style>
