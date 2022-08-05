@@ -12,9 +12,15 @@
       <input
         class="filter-input"
         type="text"
-        v-model="search"
+        v-model.lazy="search"
         placeholder="BUSCAR"
+        list="search"
       />
+      <datalist id="search">
+        <option v-for="champion in displayChampions" v-bind:key="champion.name">
+          {{ champion.name.toUpperCase() }}
+        </option>
+      </datalist>
       <div class="filter-tags">
         <champion-type-filter @filter="currentSelectedCategory = $event" />
       </div>
@@ -103,7 +109,7 @@ export default {
     },
 
     getChampionImage(championKey) {
-      return `https://ddragon.leagueoflegends.com/cdn/img/champion/splash/${championKey}_0.jpg`;
+      return require("../assets/champions/display/" + championKey + "_0.jpg");
     },
 
     resetSearch() {
@@ -231,6 +237,7 @@ export default {
   font-size: 12px;
   line-height: 15px;
   text-align: center;
+  text-transform: uppercase;
   height: 32px;
   border: none;
   border-right: 2px solid #b7b7b7;
@@ -287,13 +294,13 @@ export default {
 }
 
 .champions-items-container {
-  width: 248px;
-  height: 307px;
+  width: 249px;
+  height: 324px;
   min-width: 83px;
   min-height: 87px;
   margin: 0 19px 36px 19px;
   position: relative;
-  clip-path: polygon(0 0, 85% 0, 100% 10%, 100% 100%, 0 100%);
+  clip-path: polygon(0 0, 92% 0, 100% 6%, 100% 100%, 0 100%);
 }
 .champions-items-container-div {
   width: 100%;
@@ -308,21 +315,43 @@ export default {
   font-style: italic;
   font-weight: 800;
   font-size: 15px;
-  line-height: 18px;
+  line-height: 10px;
   position: relative;
-  left: 26px;
+  left: 18px;
   text-decoration: none;
   text-transform: uppercase;
 }
 
+.champions-items-container:hover .champions-items-container-div,
 .champions-items-container:hover {
+  animation: clipPath 0.2s linear;
+  background: #00505e;
   clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
 }
-.champions-items-container-div:hover {
-  background: #00505e;
+
+.champions-items-container-div p:hover {
+  left: 30px;
 }
 .champions-items .champions-image {
   width: 100%;
   height: 100%;
+}
+
+@keyframes clipPath {
+  0% {
+    clip-path: polygon(0 0, 92% 0, 100% 6%, 100% 100%, 0 100%);
+  }
+  25% {
+    clip-path: polygon(0 0, 94% 0, 100% 4%, 100% 100%, 0 100%);
+  }
+  50% {
+    clip-path: polygon(0 0, 96% 0, 100% 2%, 100% 100%, 0 100%);
+  }
+  75% {
+    clip-path: polygon(0 0, 98% 0, 100% 1%, 100% 100%, 0 100%);
+  }
+  100% {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%);
+  }
 }
 </style>
