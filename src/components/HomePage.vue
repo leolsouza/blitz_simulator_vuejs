@@ -276,7 +276,7 @@ export default {
 }
 
 .champions {
-  margin: 28px 5%;
+  margin: 28px 0;
   display: flex;
   justify-content: center;
 }
@@ -285,6 +285,7 @@ export default {
   flex-direction: row;
   flex-wrap: wrap;
   justify-content: flex-start;
+  margin-left: 10%;
 }
 
 .champions-items {
@@ -298,7 +299,7 @@ export default {
   height: 324px;
   min-width: 83px;
   min-height: 87px;
-  margin: 0 19px 36px 19px;
+  margin: 0 38px 36px 0px;
   position: relative;
   clip-path: polygon(0 0, 92% 0, 100% 6%, 100% 100%, 0 100%);
 }
